@@ -166,7 +166,7 @@ struct AddReceiptButton: View {
                     .frame(width: 45)
                     .foregroundStyle(Color(hex:"032E6E"))
                 
-                Text("영수증 등록하러 가기")
+                Text("영수증 안 버렸지??")
                     .font(.system(size: 24, weight: .bold))
                     .lineLimit(1)
             }

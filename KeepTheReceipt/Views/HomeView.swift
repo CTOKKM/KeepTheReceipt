@@ -2,6 +2,8 @@ import SwiftUI
 import Charts
 
 struct HomeView: View {
+    @Binding var showingAddReceipt: Bool
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -40,7 +42,7 @@ struct HomeView: View {
                         LatestExpenseView()
                         
                         // 영수증 등록하기 버튼
-                        AddReceiptButton()
+                        AddReceiptButton(showingAddReceipt: $showingAddReceipt)
                     }
                     .padding()
                 }
@@ -157,28 +159,34 @@ struct LatestExpenseView: View {
 }
 
 struct AddReceiptButton: View {
+    @Binding var showingAddReceipt: Bool
+    
     var body: some View {
-        VStack {
-            HStack(alignment: .center, spacing: 24) {
-                Image("addIcon")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 45)
-                    .foregroundStyle(Color(hex:"032E6E"))
-                
-                Text("영수증 안 버렸지??")
-                    .font(.system(size: 24, weight: .bold))
-                    .lineLimit(1)
+        Button(action: {
+            showingAddReceipt = true
+        }) {
+            VStack {
+                HStack(alignment: .center, spacing: 24) {
+                    Image("addIcon")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 45)
+                        .foregroundStyle(Color(hex:"032E6E"))
+                    
+                    Text("영수증 안 버렸지??")
+                        .font(.system(size: 24, weight: .bold))
+                        .lineLimit(1)
+                }
+                .padding(.vertical, 40)
+                .padding(.horizontal, 24)
             }
-            .padding(.vertical, 40)
-            .padding(.horizontal, 24)
+            .frame(maxWidth: .infinity)
+            .background(Color.white)
+            .cornerRadius(12)
         }
-        .frame(maxWidth: .infinity)
-        .background(Color.white)
-        .cornerRadius(12)
     }
 }
 
 #Preview {
-    HomeView()
+    HomeView(showingAddReceipt: .constant(false))
 } 

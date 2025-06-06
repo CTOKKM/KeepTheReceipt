@@ -3,36 +3,34 @@ import SwiftUI
 struct MainTabView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @State private var selectedTab = 0
+    @State private var showingAddReceipt = false
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            HomeView()
+            HomeView(showingAddReceipt: $showingAddReceipt)
                 .tabItem {
                     Label("홈", systemImage: "house")
                 }
                 .tag(0)
             
-            AddReceiptView()
-                .tabItem {
-                    Label("등록", systemImage: "plus.circle")
-                }
-                .tag(1)
-            
             AnalysisView()
                 .tabItem {
                     Label("분석", systemImage: "chart.bar")
                 }
-                .tag(2)
+                .tag(1)
             
             SettingsView()
                 .tabItem {
                     Label("설정", systemImage: "gear")
                 }
-                .tag(3)
+                .tag(2)
         }
         .accentColor(Color(hex: "032E6E"))
         .onAppear {
             UITabBar.appearance().unselectedItemTintColor = UIColor(named: "UnselectedTabColor")
+        }
+        .sheet(isPresented: $showingAddReceipt) {
+            AddReceiptView(isPresented: $showingAddReceipt)
         }
     }
 }
@@ -64,4 +62,5 @@ struct SettingsView: View {
 
 #Preview {
     MainTabView()
+        .environmentObject(AuthViewModel())
 } 

@@ -11,7 +11,11 @@ struct AddReceiptView: View {
     @State private var category = "식비"
     @State private var memo = ""
     @State private var isProcessing = false
+    @State private var isSaving = false
+    @State private var showAlert = false
+    @State private var alertMessage = ""
     @FocusState private var isAmountFocused: Bool
+    @Binding var isPresented: Bool
     
     private let visionService = VisionService(apiKey: APIConfig.googleVisionAPIKey)
     
@@ -54,7 +58,7 @@ struct AddReceiptView: View {
                                 .cornerRadius(12)
                             }
                         }
-                        .disabled(isProcessing)
+                        .disabled(isProcessing || isSaving)
                     }
                     .padding(.horizontal, 24)
                     
@@ -101,6 +105,24 @@ struct AddReceiptView: View {
                         CustomTextField(title: "메모", text: $memo, placeholder: "메모를 입력하세요")
                     }
                     .padding(.horizontal, 24)
+                    
+                    // 저장 버튼
+                    Button(action: saveReceipt) {
+                        if isSaving {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        } else {
+                            Text("저장하기")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                    .frame(height: 50)
+                    .background(isFormValid ? Color(hex: "032E6E") : Color.gray)
+                    .cornerRadius(12)
+                    .padding(.horizontal, 24)
+                    .disabled(!isFormValid || isSaving)
                 }
                 .padding(.vertical, 24)
             }
@@ -110,6 +132,11 @@ struct AddReceiptView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(height: 24)
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("닫기") {
+                        isPresented = false
+                    }
                 }
             }
             .actionSheet(isPresented: $showingActionSheet) {
@@ -154,6 +181,52 @@ struct AddReceiptView: View {
             }
             .onTapGesture {
                 hideKeyboard()
+            }
+            .alert("알림", isPresented: $showAlert) {
+                Button("확인", role: .cancel) { }
+            } message: {
+                Text(alertMessage)
+            }
+        }
+    }
+    
+    private var isFormValid: Bool {
+        !storeName.isEmpty && !totalAmount.isEmpty && selectedImage != nil
+    }
+    
+    private func saveReceipt() {
+        guard let amount = Double(totalAmount.replacingOccurrences(of: ",", with: "")) else {
+            alertMessage = "금액을 올바르게 입력해주세요."
+            showAlert = true
+            return
+        }
+        
+        isSaving = true
+        
+        let receipt = Receipt(
+            id: UUID().uuidString,
+            storeName: storeName,
+            date: date,
+            amount: amount,
+            category: category,
+            memo: memo.isEmpty ? nil : memo,
+            imageURL: nil,
+            userId: FirebaseService.shared.currentUserId ?? ""
+        )
+        
+        Task {
+            do {
+                try await FirebaseService.shared.saveReceipt(receipt, image: selectedImage)
+                await MainActor.run {
+                    isSaving = false
+                    isPresented = false  // 저장 후 모달 닫기
+                }
+            } catch {
+                await MainActor.run {
+                    isSaving = false
+                    alertMessage = "저장 중 오류가 발생했습니다: \(error.localizedDescription)"
+                    showAlert = true
+                }
             }
         }
     }
@@ -249,5 +322,5 @@ struct ReceiptRowView: View {
 }
 
 #Preview {
-    AddReceiptView()
+    AddReceiptView(isPresented: .constant(true))
 } 

@@ -9,6 +9,10 @@ class FirebaseService {
     private let db = Firestore.firestore()
     private let storage = Storage.storage()
     
+    var currentUserId: String? {
+        Auth.auth().currentUser?.uid
+    }
+    
     private init() {}
     
     // MARK: - Authentication
@@ -28,6 +32,10 @@ class FirebaseService {
     
     // MARK: - Receipt Management
     func saveReceipt(_ receipt: Receipt, image: UIImage?) async throws {
+        guard let userId = currentUserId else {
+            throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "사용자 인증 필요"])
+        }
+        
         // 1. 이미지가 있다면 Storage에 업로드
         var imageURL: String?
         if let image = image {
@@ -37,6 +45,7 @@ class FirebaseService {
         // 2. 영수증 데이터 저장
         var receiptData = receipt
         receiptData.imageURL = imageURL
+        receiptData.userId = userId
         
         try await db.collection("receipts").document(receipt.id).setData(receiptData.toDictionary())
     }
@@ -55,7 +64,7 @@ class FirebaseService {
     }
     
     func fetchReceipts() async throws -> [Receipt] {
-        guard let userId = Auth.auth().currentUser?.uid else {
+        guard let userId = currentUserId else {
             throw NSError(domain: "AuthError", code: -1, userInfo: [NSLocalizedDescriptionKey: "사용자 인증 필요"])
         }
         

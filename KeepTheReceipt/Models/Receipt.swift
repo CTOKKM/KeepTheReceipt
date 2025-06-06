@@ -23,6 +23,18 @@ struct Receipt: Identifiable, Codable {
         case userId
     }
     
+    // 기본 초기화 메서드
+    init(id: String, storeName: String, date: Date, amount: Double, category: String, memo: String? = nil, imageURL: String? = nil, userId: String) {
+        self.id = id
+        self.storeName = storeName
+        self.date = date
+        self.amount = amount
+        self.category = category
+        self.memo = memo
+        self.imageURL = imageURL
+        self.userId = userId
+    }
+    
     // Firestore 문서를 Receipt로 변환하는 초기화 메서드
     init?(document: [String: Any]) {
         guard let id = document["id"] as? String,

@@ -1,14 +1,77 @@
 import Foundation
 import UIKit
+import FirebaseFirestore
 
-struct Receipt: Identifiable {
-    let id = UUID()
-    let storeName: String
-    let totalAmount: Double
-    let date: Date
-    let category: String
-    let memo: String
-    let image: UIImage?
+struct Receipt: Identifiable, Codable {
+    var id: String
+    var storeName: String
+    var date: Date
+    var amount: Double
+    var category: String
+    var memo: String?
+    var imageURL: String?
+    var userId: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case storeName
+        case date
+        case amount
+        case category
+        case memo
+        case imageURL
+        case userId
+    }
+    
+    // Firestore 문서를 Receipt로 변환하는 초기화 메서드
+    init?(document: [String: Any]) {
+        guard let id = document["id"] as? String,
+              let storeName = document["storeName"] as? String,
+              let amount = document["amount"] as? Double,
+              let category = document["category"] as? String,
+              let userId = document["userId"] as? String else {
+            return nil
+        }
+        
+        // Timestamp 또는 Date 처리
+        if let timestamp = document["date"] as? Timestamp {
+            self.date = timestamp.dateValue()
+        } else if let date = document["date"] as? Date {
+            self.date = date
+        } else {
+            return nil
+        }
+        
+        self.id = id
+        self.storeName = storeName
+        self.amount = amount
+        self.category = category
+        self.memo = document["memo"] as? String
+        self.imageURL = document["imageURL"] as? String
+        self.userId = userId
+    }
+    
+    // Receipt를 Firestore 문서로 변환하는 메서드
+    func toDictionary() -> [String: Any] {
+        var dict: [String: Any] = [
+            "id": id,
+            "storeName": storeName,
+            "date": Timestamp(date: date),
+            "amount": amount,
+            "category": category,
+            "userId": userId
+        ]
+        
+        if let memo = memo {
+            dict["memo"] = memo
+        }
+        
+        if let imageURL = imageURL {
+            dict["imageURL"] = imageURL
+        }
+        
+        return dict
+    }
     
     // 영수증 텍스트 파싱을 위한 정규식 패턴
     static let patterns = [

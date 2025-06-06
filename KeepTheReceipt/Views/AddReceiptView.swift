@@ -149,7 +149,7 @@ struct AddReceiptView: View {
                         .padding()
                         .background(Color.white)
                         .cornerRadius(12)
-                        .shadow(radius: 10)
+                        .shadow(radius: 4)
                 }
             }
             .onTapGesture {

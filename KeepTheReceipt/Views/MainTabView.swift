@@ -27,7 +27,7 @@ struct MainTabView: View {
                 }
                 .tag(2)
         }
-        .accentColor(Color(hex: "032E6E"))
+        .accentColor(Color(hex: "019EDB"))
         .onAppear {
             UITabBar.appearance().unselectedItemTintColor = UIColor(named: "UnselectedTabColor")
         }

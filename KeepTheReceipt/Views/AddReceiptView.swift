@@ -24,7 +24,7 @@ struct AddReceiptView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 VStack(spacing: 24) {
                     // 사진 업로드 영역
                     VStack(spacing: 16) {

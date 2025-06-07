@@ -18,7 +18,7 @@ struct AuthView: View {
             ZStack {
                 // 배경 그라데이션
                 LinearGradient(
-                    gradient: Gradient(colors: [Color(hex: "032E6E"), Color(hex: "1E90FF")]),
+                    gradient: Gradient(colors: [Color(hex: "032E6E"), Color(hex: "019EDB")]),
                     startPoint: .top,
                     endPoint: .bottom
                 )

@@ -8,7 +8,7 @@ struct ReceiptRowView: View {
         HStack {
             if isSelected {
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(Color(hex: "032E6E"))
+                    .foregroundColor(ColorTheme.primary)
             }
             
             VStack(alignment: .leading, spacing: 8) {
@@ -29,10 +29,14 @@ struct ReceiptRowView: View {
                     Spacer()
                     Text(receipt.category)
                         .font(.caption)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.blue.opacity(0.1))
-                        .cornerRadius(4)
+                        .fontWeight(.medium)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(ColorTheme.getColor(for: receipt.category))
+                        )
+                        .foregroundColor(.white)
                 }
                 .padding(.horizontal, 8)
             }
@@ -45,10 +49,38 @@ struct ReceiptRowView: View {
 }
 
 #Preview {
-    ReceiptRowView(receipt: Receipt(
-        storeName: "테스트 가게",
-        date: Date(),
-        amount: 15000,
-        category: "식비"
-    ))
+    VStack(spacing: 16) {
+        ReceiptRowView(receipt: Receipt(
+            storeName: "테스트 가게",
+            date: Date(),
+            amount: 15000,
+            category: "식비"
+        ))
+        ReceiptRowView(receipt: Receipt(
+            storeName: "테스트 가게",
+            date: Date(),
+            amount: 15000,
+            category: "교통비"
+        ))
+        ReceiptRowView(receipt: Receipt(
+            storeName: "테스트 가게",
+            date: Date(),
+            amount: 15000,
+            category: "쇼핑"
+        ))
+        ReceiptRowView(receipt: Receipt(
+            storeName: "테스트 가게",
+            date: Date(),
+            amount: 15000,
+            category: "생활비"
+        ))
+        ReceiptRowView(receipt: Receipt(
+            storeName: "테스트 가게",
+            date: Date(),
+            amount: 15000,
+            category: "기타"
+        ))
+    }
+    .padding()
+    .background(Color(hex: "f2f2f2"))
 } 

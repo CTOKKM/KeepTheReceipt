@@ -15,22 +15,31 @@ struct AnalysisView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // 날짜 선택
-                    HStack {
-                        Text("2025년 5월")
-                            .font(.system(size: 16, weight: .semibold))
-                        
-                        Image(systemName: "chevron.down")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 12, height: 12)
-                        
-                        Spacer()
-                    }
-                    .padding(.horizontal, 24)
+            VStack(spacing: 24) {
+                HStack {
+                    Image("LogoIcon")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 24)
                     
+                    Spacer()
+                }
+                .padding(.horizontal, 24)
+                
+                HStack {
+                    Text("2025년 5월")
+                        .font(.system(size: 16, weight: .semibold))
+                    
+                    Image(systemName: "chevron.down")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 12, height: 12)
+                    
+                    Spacer()
+                }
+                .padding(.horizontal, 24)
+                
+                ScrollView(showsIndicators: false) {
                     // 도넛 차트
                     VStack(spacing: 16) {
                         Text("카테고리별 지출")
@@ -45,7 +54,7 @@ struct AnalysisView: View {
                                         innerRadius: .ratio(0.618),
                                         angularInset: 1.5
                                     )
-                                    .foregroundStyle(chartColors[index % chartColors.count])
+                                    .foregroundStyle(ColorTheme.getColor(for: data.0))
                                     .annotation(position: .overlay) {
                                         Text(data.0)
                                             .font(.system(size: 12, weight: .medium))
@@ -60,7 +69,7 @@ struct AnalysisView: View {
                                 ForEach(Array(viewModel.categoryData.enumerated()), id: \.element.0) { index, data in
                                     HStack {
                                         Circle()
-                                            .fill(chartColors[index % chartColors.count])
+                                            .fill(ColorTheme.getColor(for: data.0))
                                             .frame(width: 12, height: 12)
                                         
                                         Text(data.0)
@@ -70,7 +79,7 @@ struct AnalysisView: View {
                                         
                                         Text("₩\(Int(data.1))")
                                             .font(.system(size: 14, weight: .medium))
-                                            .foregroundColor(chartColors[index % chartColors.count])
+                                            .foregroundColor(ColorTheme.getColor(for: data.0))
                                     }
                                 }
                             }
@@ -94,7 +103,7 @@ struct AnalysisView: View {
                                     x: .value("날짜", day),
                                     y: .value("금액", amount)
                                 )
-                                .foregroundStyle(chartColors[0].gradient)
+                                .foregroundStyle(ColorTheme.primary.gradient)
                             }
                         }
                         .chartYAxis {
@@ -112,6 +121,7 @@ struct AnalysisView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                     .padding(.horizontal, 24)
+                    .padding(.top, 24)
                     
                     // 카테고리별 상세 내역
                     VStack(spacing: 16) {
@@ -129,7 +139,7 @@ struct AnalysisView: View {
                                     
                                     Text("₩\(Int(data.1))")
                                         .font(.system(size: 14, weight: .medium))
-                                        .foregroundColor(chartColors[index % chartColors.count])
+                                        .foregroundColor(ColorTheme.getColor(for: data.0))
                                 }
                                 .padding(.horizontal, 16)
                                 .padding(.vertical, 12)
@@ -139,18 +149,11 @@ struct AnalysisView: View {
                         }
                     }
                     .padding(.horizontal, 24)
+                    .padding(.top, 24)
                 }
-                .padding(.vertical, 24)
+                .padding(.bottom, 24)
             }
             .background(Color(hex: "f2f2f2"))
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Image("LogoIcon")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 24)
-                }
-            }
             .task {
                 await viewModel.fetchData()
             }
@@ -160,5 +163,5 @@ struct AnalysisView: View {
 
 #Preview {
     AnalysisView()
-} 
- 
+}
+

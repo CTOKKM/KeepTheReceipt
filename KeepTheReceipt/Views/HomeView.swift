@@ -97,7 +97,7 @@ struct TotalExpenseCard: View {
                         .frame(height: 8)
                     
                     RoundedRectangle(cornerRadius: 8)
-                        .fill(Color(hex: "032E6E"))
+                        .fill(ColorTheme.primary)
                         .frame(width: geometry.size.width * progressPercentage, height: 8)
                 }
             }
@@ -106,7 +106,7 @@ struct TotalExpenseCard: View {
             HStack {
                 Text("\(Int(progressPercentage * 100))%")
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(Color(hex: "032E6E"))
+                    .foregroundColor(ColorTheme.main)
                 
                 Spacer()
                 
@@ -125,6 +125,10 @@ struct TotalExpenseCard: View {
 struct CategoryExpenseChart: View {
     let categoryData: [(String, Double)]
     
+    private var maxAmount: Double {
+        categoryData.first?.1 ?? 1
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("최대 소비 카테고리")
@@ -132,37 +136,48 @@ struct CategoryExpenseChart: View {
             
             VStack(spacing: 12) {
                 ForEach(categoryData.prefix(4), id: \.0) { category, amount in
-                    VStack(spacing: 4) {
-                        HStack {
-                            Text(category)
-                                .font(.system(size: 14, weight: .medium))
-                            
-                            Spacer()
-                            
-                            Text("₩\(Int(amount))")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(Color(hex: "96A7BE"))
-                        }
-                        
-                        GeometryReader { geometry in
-                            ZStack(alignment: .leading) {
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(Color(hex: "E8E8E8"))
-                                    .frame(height: 8)
-                                
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(Color(hex: "032E6E"))
-                                    .frame(width: geometry.size.width * (amount / (categoryData.first?.1 ?? 1)), height: 8)
-                            }
-                        }
-                        .frame(height: 8)
-                    }
+                    CategoryProgressRow(category: category, amount: amount, maxAmount: maxAmount)
                 }
             }
         }
         .padding()
         .background(Color.white)
         .cornerRadius(12)
+    }
+}
+
+struct CategoryProgressRow: View {
+    let category: String
+    let amount: Double
+    let maxAmount: Double
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            HStack {
+                Text(category)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Spacer()
+                Text("₩\(Int(amount))")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    Rectangle()
+                        .fill(Color(hex: "f2f2f2"))
+                        .frame(height: 8)
+                        .cornerRadius(4)
+                    
+                    Rectangle()
+                        .fill(ColorTheme.getColor(for: category))
+                        .frame(width: geometry.size.width * CGFloat(amount / maxAmount), height: 8)
+                        .cornerRadius(4)
+                }
+            }
+            .frame(height: 8)
+        }
     }
 }
 
@@ -187,6 +202,7 @@ struct LatestExpenseView: View {
                 }
             }
         }
+        .padding(.bottom, 80)
     }
 }
 
@@ -202,7 +218,7 @@ struct AddReceiptButton: View {
                 .scaledToFit()
                 .frame(width: 24, height: 24)
                 .padding(16)
-                .background(Color(hex: "032E6E"))
+                .background(ColorTheme.primary)
                 .foregroundColor(.white)
                 .clipShape(Circle())
                 .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)

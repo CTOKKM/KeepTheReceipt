@@ -16,6 +16,7 @@ struct AddReceiptView: View {
     @State private var alertMessage = ""
     @FocusState private var isAmountFocused: Bool
     @Binding var isPresented: Bool
+    @EnvironmentObject private var homeViewModel: HomeViewModel
     
     private let visionService = VisionService(apiKey: APIConfig.googleVisionAPIKey)
     
@@ -63,12 +64,9 @@ struct AddReceiptView: View {
                     .padding(.horizontal, 24)
                     
                     // 입력 폼
-                    VStack(spacing: 16) {
-                        Text("영수증 정보")
-                            .font(.system(size: 18, weight: .bold))
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                    VStack(spacing: 24) {
+                        CustomTextField(title: "가게 이름", text: $storeName, placeholder: "가게 이름을 입력하세요")
                         
-                        CustomTextField(title: "상점명", text: $storeName, placeholder: "상점명을 입력하세요")
                         CustomTextField(title: "금액", text: $totalAmount, placeholder: "금액을 입력하세요", keyboardType: .numberPad)
                             .focused($isAmountFocused)
                             .onChange(of: totalAmount) { newValue in
@@ -88,7 +86,18 @@ struct AddReceiptView: View {
                                 }
                             }
                         
-                        // 카테고리 선택
+                        // 날짜 선택
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("날짜")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(Color(hex: "666666"))
+                            
+                            DatePicker("날짜 선택", selection: $date, displayedComponents: [.date])
+                                .datePickerStyle(.compact)
+                                .labelsHidden()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        
                         VStack(alignment: .leading, spacing: 8) {
                             Text("카테고리")
                                 .font(.system(size: 16, weight: .medium))
@@ -219,7 +228,12 @@ struct AddReceiptView: View {
                 try await FirebaseService.shared.saveReceipt(receipt, image: selectedImage)
                 await MainActor.run {
                     isSaving = false
-                    isPresented = false  // 저장 후 모달 닫기
+                    // HomeView 데이터 새로고침을 먼저 실행
+                    Task {
+                        await homeViewModel.fetchData()
+                        // 데이터 새로고침이 완료된 후 모달 닫기
+                        isPresented = false
+                    }
                 }
             } catch {
                 await MainActor.run {

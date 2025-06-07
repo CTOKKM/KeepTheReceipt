@@ -3,52 +3,62 @@ import Charts
 
 struct HomeView: View {
     @Binding var showingAddReceipt: Bool
-    @StateObject private var viewModel = HomeViewModel()
+    @EnvironmentObject private var viewModel: HomeViewModel
     
     var body: some View {
         NavigationView {
-            VStack {
-                HStack {
-                    Image("LogoIcon")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 24)
-                    
-                    Spacer()
-                }
-                .padding(.horizontal, 24)
-                
-                HStack {
-                    Text("2025년 5월")
-                        .font(.system(size: 16, weight: .semibold))
-                    
-                    Image(systemName: "chevron.down")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 12, height: 12)
-                    
-                    Spacer()
-                }
-                .padding(.horizontal, 24)
-                
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 20) {
-                        // 총 지출 금액 카드
-                        TotalExpenseCard(totalAmount: viewModel.totalAmount)
+            ZStack {
+                VStack {
+                    HStack {
+                        Image("LogoIcon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 24)
                         
-                        // 카테고리별 지출 차트
-                        CategoryExpenseChart(categoryData: viewModel.categoryData)
-                        
-                        // 최근 지출 내역
-                        LatestExpenseView(receipts: viewModel.recentReceipts)
-                        
-                        // 영수증 등록하기 버튼
-                        AddReceiptButton(showingAddReceipt: $showingAddReceipt)
+                        Spacer()
                     }
-                    .padding()
+                    .padding(.horizontal, 24)
+                    
+                    HStack {
+                        Text("2025년 5월")
+                            .font(.system(size: 16, weight: .semibold))
+                        
+                        Image(systemName: "chevron.down")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 12, height: 12)
+                        
+                        Spacer()
+                    }
+                    .padding(.horizontal, 24)
+                    
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 20) {
+                            // 총 지출 금액 카드
+                            TotalExpenseCard(totalAmount: viewModel.totalAmount)
+                            
+                            // 카테고리별 지출 차트
+                            CategoryExpenseChart(categoryData: viewModel.categoryData)
+                            
+                            // 최근 지출 내역
+                            LatestExpenseView(receipts: viewModel.recentReceipts)
+                        }
+                        .padding()
+                    }
+                }
+                .background((Color(hex: "f2f2f2")))
+                
+                // 플로팅 버튼
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        AddReceiptButton(showingAddReceipt: $showingAddReceipt)
+                            .padding(.trailing, 24)
+                            .padding(.bottom, 24)
+                    }
                 }
             }
-            .background((Color(hex: "f2f2f2")))
             .task {
                 await viewModel.fetchData()
             }
@@ -58,6 +68,11 @@ struct HomeView: View {
 
 struct TotalExpenseCard: View {
     let totalAmount: Double
+    private let monthlyGoal: Double = 1_000_000 // 월 목표 지출 금액
+    
+    private var progressPercentage: Double {
+        min(totalAmount / monthlyGoal, 1.0)
+    }
     
     var body: some View {
         VStack(spacing: 16) {
@@ -83,19 +98,19 @@ struct TotalExpenseCard: View {
                     
                     RoundedRectangle(cornerRadius: 8)
                         .fill(Color(hex: "032E6E"))
-                        .frame(width: geometry.size.width * 0.3, height: 8)
+                        .frame(width: geometry.size.width * progressPercentage, height: 8)
                 }
             }
             .frame(height: 8)
             
             HStack {
-                Text("30%")
+                Text("\(Int(progressPercentage * 100))%")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(Color(hex: "032E6E"))
                 
                 Spacer()
                 
-                Text("목표: ₩1,000,000")
+                Text("목표: ₩\(Int(monthlyGoal))")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(Color(hex: "96A7BE"))
             }
@@ -204,24 +219,15 @@ struct AddReceiptButton: View {
         Button(action: {
             showingAddReceipt = true
         }) {
-            VStack {
-                HStack(alignment: .center, spacing: 24) {
-                    Image("addIcon")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 45)
-                        .foregroundStyle(Color(hex:"032E6E"))
-                    
-                    Text("영수증 안 버렸지??")
-                        .font(.system(size: 24, weight: .bold))
-                        .lineLimit(1)
-                }
-                .padding(.vertical, 40)
-                .padding(.horizontal, 24)
-            }
-            .frame(maxWidth: .infinity)
-            .background(Color.white)
-            .cornerRadius(12)
+            Image("addIcon")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 24, height: 24)
+                .padding(16)
+                .background(Color(hex: "032E6E"))
+                .foregroundColor(.white)
+                .clipShape(Circle())
+                .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
         }
     }
 }

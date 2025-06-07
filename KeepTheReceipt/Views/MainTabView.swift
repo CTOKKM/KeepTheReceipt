@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MainTabView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
+    @StateObject private var homeViewModel = HomeViewModel()
     @State private var selectedTab = 1
     @State private var showingAddReceipt = false
     
@@ -14,6 +15,7 @@ struct MainTabView: View {
                 .tag(0)
             
             HomeView(showingAddReceipt: $showingAddReceipt)
+                .environmentObject(homeViewModel)
                 .tabItem {
                     Label("홈", systemImage: "house")
                 }
@@ -31,6 +33,7 @@ struct MainTabView: View {
         }
         .sheet(isPresented: $showingAddReceipt) {
             AddReceiptView(isPresented: $showingAddReceipt)
+                .environmentObject(homeViewModel)
         }
     }
 }

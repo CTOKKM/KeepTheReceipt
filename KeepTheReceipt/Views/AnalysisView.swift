@@ -15,7 +15,7 @@ struct AnalysisView: View {
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 24) {
+            VStack {
                 HStack {
                     Image("LogoIcon")
                         .resizable()

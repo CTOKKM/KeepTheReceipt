@@ -306,35 +306,6 @@ struct CustomTextField: View {
     }
 }
 
-struct ReceiptRowView: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text("상점명")
-                    .font(.headline)
-                Spacer()
-                Text("₩0")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            }
-            
-            HStack {
-                Text("날짜")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                Spacer()
-                Text("카테고리")
-                    .font(.caption)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.blue.opacity(0.1))
-                    .cornerRadius(4)
-            }
-        }
-        .padding(.vertical, 4)
-    }
-}
-
 #Preview {
     AddReceiptView(isPresented: .constant(true))
 } 

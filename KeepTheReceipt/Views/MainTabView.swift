@@ -21,9 +21,9 @@ struct MainTabView: View {
                 }
                 .tag(1)
             
-            SettingsView()
+            MyPageView()
                 .tabItem {
-                    Label("설정", systemImage: "gear")
+                    Label("마이페이지", systemImage: "person")
                 }
                 .tag(2)
         }

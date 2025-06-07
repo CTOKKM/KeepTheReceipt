@@ -168,6 +168,7 @@ struct CategoryExpenseChart: View {
 
 struct LatestExpenseView: View {
     let receipts: [Receipt]
+    @EnvironmentObject private var viewModel: HomeViewModel
     
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -182,30 +183,7 @@ struct LatestExpenseView: View {
                     .padding()
             } else {
                 ForEach(receipts) { receipt in
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text(receipt.storeName)
-                                .font(.headline)
-                            Spacer()
-                            Text("₩\(Int(receipt.amount))")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        HStack {
-                            Text(receipt.date.formatted(date: .abbreviated, time: .omitted))
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Spacer()
-                            Text(receipt.category)
-                                .font(.caption)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color.blue.opacity(0.1))
-                                .cornerRadius(4)
-                        }
-                    }
-                    .padding(.vertical, 4)
+                    ReceiptRowView(receipt: receipt)
                 }
             }
         }

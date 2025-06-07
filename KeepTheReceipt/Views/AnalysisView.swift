@@ -2,16 +2,7 @@ import SwiftUI
 import Charts
 
 struct AnalysisView: View {
-    @State private var selectedDate = Date()
-    
-    // 샘플 데이터
-    let categoryData: [(String, Double)] = [
-        ("식비", 300000),
-        ("교통비", 150000),
-        ("쇼핑", 200000),
-        ("생활비", 100000),
-        ("기타", 50000)
-    ]
+    @StateObject private var viewModel = AnalysisViewModel()
     
     // 차트 색상
     let chartColors: [Color] = [
@@ -46,17 +37,45 @@ struct AnalysisView: View {
                             .font(.system(size: 18, weight: .bold))
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
-                        Chart {
-                            ForEach(Array(categoryData.enumerated()), id: \.element.0) { index, data in
-                                SectorMark(
-                                    angle: .value("금액", data.1),
-                                    innerRadius: .ratio(0.618),
-                                    angularInset: 1.5
-                                )
-                                .foregroundStyle(chartColors[index % chartColors.count])
+                        VStack(spacing: 20) {
+                            Chart {
+                                ForEach(Array(viewModel.categoryData.enumerated()), id: \.element.0) { index, data in
+                                    SectorMark(
+                                        angle: .value("금액", data.1),
+                                        innerRadius: .ratio(0.618),
+                                        angularInset: 1.5
+                                    )
+                                    .foregroundStyle(chartColors[index % chartColors.count])
+                                    .annotation(position: .overlay) {
+                                        Text(data.0)
+                                            .font(.system(size: 12, weight: .medium))
+                                            .foregroundColor(.white)
+                                    }
+                                }
                             }
+                            .frame(height: 200)
+                            
+                            // 범례
+                            VStack(spacing: 8) {
+                                ForEach(Array(viewModel.categoryData.enumerated()), id: \.element.0) { index, data in
+                                    HStack {
+                                        Circle()
+                                            .fill(chartColors[index % chartColors.count])
+                                            .frame(width: 12, height: 12)
+                                        
+                                        Text(data.0)
+                                            .font(.system(size: 14))
+                                        
+                                        Spacer()
+                                        
+                                        Text("₩\(Int(data.1))")
+                                            .font(.system(size: 14, weight: .medium))
+                                            .foregroundColor(chartColors[index % chartColors.count])
+                                    }
+                                }
+                            }
+                            .padding(.horizontal)
                         }
-                        .frame(height: 200)
                         .padding()
                         .background(Color.white)
                         .cornerRadius(12)
@@ -70,10 +89,10 @@ struct AnalysisView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
                         Chart {
-                            ForEach(1...7, id: \.self) { day in
+                            ForEach(viewModel.dailyData, id: \.0) { day, amount in
                                 BarMark(
-                                    x: .value("날짜", "\(day)일"),
-                                    y: .value("금액", Double.random(in: 10000...100000))
+                                    x: .value("날짜", day),
+                                    y: .value("금액", amount)
                                 )
                                 .foregroundStyle(chartColors[0].gradient)
                             }
@@ -101,7 +120,7 @@ struct AnalysisView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
                         VStack(spacing: 12) {
-                            ForEach(Array(categoryData.enumerated()), id: \.element.0) { index, data in
+                            ForEach(Array(viewModel.categoryData.enumerated()), id: \.element.0) { index, data in
                                 HStack {
                                     Text(data.0)
                                         .font(.system(size: 14, weight: .medium))
@@ -131,6 +150,9 @@ struct AnalysisView: View {
                         .scaledToFit()
                         .frame(height: 24)
                 }
+            }
+            .task {
+                await viewModel.fetchData()
             }
         }
     }

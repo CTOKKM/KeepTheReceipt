@@ -3,6 +3,7 @@ import Charts
 
 struct HomeView: View {
     @Binding var showingAddReceipt: Bool
+    @StateObject private var viewModel = HomeViewModel()
     
     var body: some View {
         NavigationView {
@@ -33,13 +34,13 @@ struct HomeView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20) {
                         // 총 지출 금액 카드
-                        TotalExpenseCard()
+                        TotalExpenseCard(totalAmount: viewModel.totalAmount)
                         
                         // 카테고리별 지출 차트
-                        CategoryExpenseChart()
+                        CategoryExpenseChart(categoryData: viewModel.categoryData)
                         
                         // 최근 지출 내역
-                        LatestExpenseView()
+                        LatestExpenseView(receipts: viewModel.recentReceipts)
                         
                         // 영수증 등록하기 버튼
                         AddReceiptButton(showingAddReceipt: $showingAddReceipt)
@@ -48,11 +49,16 @@ struct HomeView: View {
                 }
             }
             .background((Color(hex: "f2f2f2")))
+            .task {
+                await viewModel.fetchData()
+            }
         }
     }
 }
 
 struct TotalExpenseCard: View {
+    let totalAmount: Double
+    
     var body: some View {
         VStack(spacing: 16) {
             HStack {
@@ -62,7 +68,7 @@ struct TotalExpenseCard: View {
             }
             
             HStack {
-                Text("₩0")
+                Text("₩\(Int(totalAmount))")
                     .font(.system(size: 16, weight: .light))
                     .foregroundStyle((Color(hex: "96A7BE")))
                 Spacer()
@@ -102,21 +108,23 @@ struct TotalExpenseCard: View {
 }
 
 struct CategoryExpenseChart: View {
+    let categoryData: [(String, Double)]
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("최대 소비 카테고리")
                 .font(.system(size: 18, weight: .bold))
             
             VStack(spacing: 12) {
-                ForEach(0..<4) { _ in
+                ForEach(categoryData.prefix(4), id: \.0) { category, amount in
                     VStack(spacing: 4) {
                         HStack {
-                            Text("카테고리")
+                            Text(category)
                                 .font(.system(size: 14, weight: .medium))
                             
                             Spacer()
                             
-                            Text("₩0")
+                            Text("₩\(Int(amount))")
                                 .font(.system(size: 14, weight: .medium))
                                 .foregroundColor(Color(hex: "96A7BE"))
                         }
@@ -129,7 +137,7 @@ struct CategoryExpenseChart: View {
                                 
                                 RoundedRectangle(cornerRadius: 4)
                                     .fill(Color(hex: "032E6E"))
-                                    .frame(width: geometry.size.width * 0.5, height: 8)
+                                    .frame(width: geometry.size.width * (amount / (categoryData.first?.1 ?? 1)), height: 8)
                             }
                         }
                         .frame(height: 8)
@@ -144,16 +152,47 @@ struct CategoryExpenseChart: View {
 }
 
 struct LatestExpenseView: View {
+    let receipts: [Receipt]
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("최근 지출 내역")
                 .font(.system(size: 18, weight: .bold))
             
-            Text("아직 등록된 영수증이 없습니다")
-                .font(.system(size: 14))
-                .foregroundColor(Color(hex: "96A7BE"))
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding()
+            if receipts.isEmpty {
+                Text("아직 등록된 영수증이 없습니다")
+                    .font(.system(size: 14))
+                    .foregroundColor(Color(hex: "96A7BE"))
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding()
+            } else {
+                ForEach(receipts) { receipt in
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text(receipt.storeName)
+                                .font(.headline)
+                            Spacer()
+                            Text("₩\(Int(receipt.amount))")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        HStack {
+                            Text(receipt.date.formatted(date: .abbreviated, time: .omitted))
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text(receipt.category)
+                                .font(.caption)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color.blue.opacity(0.1))
+                                .cornerRadius(4)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+            }
         }
     }
 }

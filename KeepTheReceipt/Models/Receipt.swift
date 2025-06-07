@@ -10,7 +10,7 @@ struct Receipt: Identifiable, Codable {
     var category: String
     var memo: String?
     var imageURL: String?
-    var userId: String
+    var userId: String?
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -24,7 +24,14 @@ struct Receipt: Identifiable, Codable {
     }
     
     // 기본 초기화 메서드
-    init(id: String, storeName: String, date: Date, amount: Double, category: String, memo: String? = nil, imageURL: String? = nil, userId: String) {
+    init(id: String = UUID().uuidString,
+         storeName: String,
+         date: Date,
+         amount: Double,
+         category: String,
+         memo: String? = nil,
+         imageURL: String? = nil,
+         userId: String? = nil) {
         self.id = id
         self.storeName = storeName
         self.date = date
@@ -66,12 +73,10 @@ struct Receipt: Identifiable, Codable {
     // Receipt를 Firestore 문서로 변환하는 메서드
     func toDictionary() -> [String: Any] {
         var dict: [String: Any] = [
-            "id": id,
             "storeName": storeName,
             "date": Timestamp(date: date),
             "amount": amount,
-            "category": category,
-            "userId": userId
+            "category": category
         ]
         
         if let memo = memo {
@@ -80,6 +85,10 @@ struct Receipt: Identifiable, Codable {
         
         if let imageURL = imageURL {
             dict["imageURL"] = imageURL
+        }
+        
+        if let userId = userId {
+            dict["userId"] = userId
         }
         
         return dict
@@ -92,4 +101,26 @@ struct Receipt: Identifiable, Codable {
         "amount": #"합\s*계\s*:?\s*(\d{1,3}(?:,\d{3})*)원"#,
         "time": #"\d{2}:\d{2}"#
     ]
+    
+    static func fromFirestore(_ document: QueryDocumentSnapshot) -> Receipt? {
+        let data = document.data()
+        
+        guard let storeName = data["storeName"] as? String,
+              let timestamp = data["date"] as? Timestamp,
+              let amount = data["amount"] as? Double,
+              let category = data["category"] as? String else {
+            return nil
+        }
+        
+        return Receipt(
+            id: document.documentID,
+            storeName: storeName,
+            date: timestamp.dateValue(),
+            amount: amount,
+            category: category,
+            memo: data["memo"] as? String,
+            imageURL: data["imageURL"] as? String,
+            userId: data["userId"] as? String
+        )
+    }
 } 

@@ -70,12 +70,11 @@ class FirebaseService {
         
         let snapshot = try await db.collection("receipts")
             .whereField("userId", isEqualTo: userId)
-            .order(by: "date", descending: true)
             .getDocuments()
         
         return snapshot.documents.compactMap { document in
-            Receipt(document: document.data())
-        }
+            Receipt.fromFirestore(document)
+        }.sorted { $0.date > $1.date }
     }
     
     func deleteReceipt(_ receipt: Receipt) async throws {

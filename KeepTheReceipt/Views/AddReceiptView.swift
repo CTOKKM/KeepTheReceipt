@@ -191,7 +191,7 @@ struct AddReceiptView: View {
     }
     
     private var isFormValid: Bool {
-        !storeName.isEmpty && !totalAmount.isEmpty && selectedImage != nil
+        !storeName.isEmpty && !totalAmount.isEmpty
     }
     
     private func saveReceipt() {

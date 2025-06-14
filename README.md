@@ -53,15 +53,7 @@
 ### SwiftUI & iOS Framework
 - **SwiftUI**: UI 구현
 - **UIKit**: 일부 UI 컴포넌트
-- **Combine**: 비동기 데이터 처리
-- **Swift Concurrency**: 비동기 작업 처리
-- **Core Data**: 로컬 데이터 저장
 - **Vision**: OCR 기능
-- **Core Image**: 이미지 처리
-- **PDFKit**: PDF 생성 및 처리
-- **MessageUI**: 이메일 공유 기능
-- **LocalAuthentication**: 생체 인증
-- **WidgetKit**: 위젯 기능
 
 ### Firebase
 - **Authentication**: 사용자 인증

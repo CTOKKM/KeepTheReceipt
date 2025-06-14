@@ -23,13 +23,8 @@ struct KeepTheReceiptApp: App {
     
     var body: some Scene {
         WindowGroup {
-            if authViewModel.isAuthenticated {
-                MainTabView()
-                    .environmentObject(authViewModel)
-            } else {
-                AuthView()
-                    .environmentObject(authViewModel)
-            }
+            SplashView()
+                .environmentObject(authViewModel)
         }
     }
 }

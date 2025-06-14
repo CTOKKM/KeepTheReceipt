@@ -26,18 +26,18 @@ struct AnalysisView: View {
                 }
                 .padding(.horizontal, 24)
                 
-                HStack {
-                    Text("2025년 5월")
-                        .font(.system(size: 16, weight: .semibold))
-                    
-                    Image(systemName: "chevron.down")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 12, height: 12)
-                    
-                    Spacer()
-                }
-                .padding(.horizontal, 24)
+//                HStack {
+//                    Text("2025년 5월")
+//                        .font(.system(size: 16, weight: .semibold))
+//                    
+//                    Image(systemName: "chevron.down")
+//                        .resizable()
+//                        .scaledToFit()
+//                        .frame(width: 12, height: 12)
+//                    
+//                    Spacer()
+//                }
+//                .padding(.horizontal, 24)
                 
                 ScrollView(showsIndicators: false) {
                     // 도넛 차트

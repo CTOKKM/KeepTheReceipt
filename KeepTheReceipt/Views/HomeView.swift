@@ -19,18 +19,18 @@ struct HomeView: View {
                     }
                     .padding(.horizontal, 24)
                     
-                    HStack {
-                        Text("2025년 5월")
-                            .font(.system(size: 16, weight: .semibold))
-                        
-                        Image(systemName: "chevron.down")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 12, height: 12)
-                        
-                        Spacer()
-                    }
-                    .padding(.horizontal, 24)
+//                    HStack {
+//                        Text("2025년 5월")
+//                            .font(.system(size: 16, weight: .semibold))
+//                        
+//                        Image(systemName: "chevron.down")
+//                            .resizable()
+//                            .scaledToFit()
+//                            .frame(width: 12, height: 12)
+//                        
+//                        Spacer()
+//                    }
+//                    .padding(.horizontal, 24)
                     
                     ScrollView(showsIndicators: false) {
                         VStack(spacing: 20) {
@@ -77,7 +77,7 @@ struct TotalExpenseCard: View {
     var body: some View {
         VStack(spacing: 16) {
             HStack {
-                Text("이번 달 총 지출 금액")
+                Text("총 지출 금액")
                     .font(.system(size: 18, weight: .bold))
                 Spacer()
             }

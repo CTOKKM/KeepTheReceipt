@@ -1,7 +1,9 @@
 # KeepTheReceipt
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/81b5b17e-d331-49c2-af3d-aa0853801059" alt="LogoIcon" width="200">
+  <a href="https://youtu.be/xN2axrbiLm4" target="_blank">
+    <img src="assets/LogoIcon.png" alt="LogoIcon" width="400">
+  </a>
 </p>
 
 영수증을 디지털로 관리하고 지출을 분석할 수 있는 iOS 앱입니다.

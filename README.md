@@ -1,14 +1,14 @@
 # KeepTheReceipt
 
 <p align="center">
-  <a href="https://youtu.be/xN2axrbiLm4" target="_blank">
+  <a href="https://youtu.be/WggeX6R-PUo" target="_blank">
     <img src="assets/LogoIcon.png" alt="LogoIcon" width="400">
   </a>
 </p>
 
 <p align="center">
   👉 위 로고 아이콘을 클릭하거나 
-  <a href="https://youtu.be/xN2axrbiLm4" target="_blank">이 링크를 클릭</a>
+  <a href="https://youtu.be/WggeX6R-PUo" target="_blank">이 링크를 클릭</a>
   하면 <b>시연 영상(Youtube)</b> 으로 이동합니다.
 </p>
 

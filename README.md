@@ -1,4 +1,4 @@
-# KeepTheReceipt
+# 영버마(KeepTheReceipt)
 
 <p align="center">
   <a href="https://youtu.be/_YTEg2rsPA4" target="_blank">
